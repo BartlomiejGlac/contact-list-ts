@@ -9,19 +9,20 @@ interface UserProfile {
   firstNameLastName: string;
 }
 
-function App() {
+function App({ receiveData = apiData }) {
   const [data, setData] = React.useState<UserProfile[]>([]);
   const [selected, setSelected] = React.useState([]);
   const [isLoading, setisLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
   //  TODO fetch contacts using apiData function, handle loading and error states
   useEffect(() => {
     setisLoading(true);
-    apiData()
+    receiveData()
       .then((batch) => setData(data.concat(batch)))
       .finally(() => {
         setisLoading(false);
       });
-  }, []);
+  }, [currentPage]);
 
   return (
     <div className='App'>
@@ -33,6 +34,7 @@ function App() {
           <PersonInfo key={personInfo.id} data={personInfo} />
         ))}
       </div>
+      <button onClick={() => setCurrentPage(currentPage + 1)}>Load More</button>
     </div>
   );
 }

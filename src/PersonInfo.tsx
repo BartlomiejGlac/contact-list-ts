@@ -23,11 +23,12 @@ function PersonInfo(props: Props) {
         background: "#fff",
         cursor: "pointer",
       }}
-      className="person-info"
+      className='person-info'
+      data-testid='person-info'
     >
-      <div className="firstNameLastName">{data.firstNameLastName}</div>
-      <div className="jobTitle">{data.jobTitle}</div>
-      <div className="emailAddress">{data.emailAddress}</div>
+      <div className='firstNameLastName'>{data.firstNameLastName}</div>
+      <div className='jobTitle'>{data.jobTitle}</div>
+      <div className='emailAddress'>{data.emailAddress}</div>
     </div>
   );
 }

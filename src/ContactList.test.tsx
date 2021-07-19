@@ -46,11 +46,17 @@ test("should render more elements when clicked load more button", async () => {
     .mockResolvedValueOnce(firstBatchOfData)
     .mockResolvedValueOnce(secondBatchOfData);
   render(<App receiveData={mockReceiveDataFunc} />);
-
   await waitForElement(() =>
     screen.getByText(firstBatchOfData[0].emailAddress)
   );
-
+  const numberOfItemsBeforeButtonClick = screen.getAllByTestId("person-info");
   fireEvent.click(screen.getByText("Load More"));
-  expect(screen.getAllByTestId("person-info")).toHaveLength(4);
+  await waitForElement(() =>
+    screen.getByText(secondBatchOfData[0].emailAddress)
+  );
+  const numberOfItemsAfterButtonClick = screen.getAllByTestId("person-info");
+  expect(numberOfItemsBeforeButtonClick).toHaveLength(firstBatchOfData.length);
+  expect(numberOfItemsAfterButtonClick).toHaveLength(
+    firstBatchOfData.length + secondBatchOfData.length
+  );
 });
