@@ -60,3 +60,14 @@ test("should render more elements when clicked load more button", async () => {
     firstBatchOfData.length + secondBatchOfData.length
   );
 });
+
+test("should display error message when fetching data", async () => {
+  const mockReceiveDataFunc = jest
+    .fn()
+    .mockRejectedValue(new Error("Something went wrong"));
+  render(<App receiveData={mockReceiveDataFunc} />);
+  const element = await waitForElement(() =>
+    screen.getByText("Sorry, sommething went wrong, please try again")
+  );
+  expect(element).toBeInTheDocument();
+});
