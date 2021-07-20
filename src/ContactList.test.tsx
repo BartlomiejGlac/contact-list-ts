@@ -61,7 +61,7 @@ test("should render more elements when clicked load more button", async () => {
   );
 });
 
-test("should display error message when fetching data", async () => {
+test("should display error message when fetching data failure", async () => {
   const mockReceiveDataFunc = jest
     .fn()
     .mockRejectedValue(new Error("Something went wrong"));
@@ -70,4 +70,15 @@ test("should display error message when fetching data", async () => {
     screen.getByText("Sorry, sommething went wrong, please try again")
   );
   expect(element).toBeInTheDocument();
+});
+
+test("should not display error message when fetching data succeed", async () => {
+  const mockReceiveDataFunc = jest.fn().mockResolvedValueOnce(firstBatchOfData);
+  render(<App receiveData={mockReceiveDataFunc} />);
+  await waitForElement(() =>
+    screen.getByText(firstBatchOfData[0].emailAddress)
+  );
+  expect(
+    screen.queryByText("Sorry, sommething went wrong, please try again")
+  ).toBeNull();
 });
