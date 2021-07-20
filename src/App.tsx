@@ -14,11 +14,14 @@ function App({ receiveData = apiData }) {
   const [selected, setSelected] = React.useState([]);
   const [isLoading, setisLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [error, setError] = useState<string | null>("");
   //  TODO fetch contacts using apiData function, handle loading and error states
   useEffect(() => {
     setisLoading(true);
+    setError(null);
     receiveData()
       .then((batch) => setData(data.concat(batch)))
+      .catch(() => setError("Sorry, sommething went wrong, please try again"))
       .finally(() => {
         setisLoading(false);
       });
@@ -35,6 +38,7 @@ function App({ receiveData = apiData }) {
         ))}
       </div>
       <button onClick={() => setCurrentPage(currentPage + 1)}>Load More</button>
+      <div>{error}</div>
     </div>
   );
 }
