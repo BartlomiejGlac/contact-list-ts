@@ -37,11 +37,13 @@ function App({ receiveData = apiData }) {
     [selected]
   );
 
-  const sortBySelected = (firstContact: UserProfile) => {
-    if (selected.includes(firstContact.id)) {
-      return -1;
-    }
-    return 1;
+  const sortBySelected = (
+    firstContact: UserProfile,
+    secondContact: UserProfile
+  ) => {
+    if (selected.includes(firstContact.id)) return -1;
+    if (selected.includes(secondContact.id)) return 1;
+    return Number(firstContact.id) - Number(secondContact.id);
   };
 
   return (
