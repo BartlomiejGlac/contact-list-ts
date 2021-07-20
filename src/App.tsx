@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useState } from "react";
 import apiData from "./api";
+import Loader from "./Loader";
 import PersonInfo from "./PersonInfo";
-
+import "./App.css";
 interface UserProfile {
   id: string;
   jobTitle: string;
@@ -15,7 +16,7 @@ function App({ receiveData = apiData }) {
   const [isLoading, setisLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [error, setError] = useState<string | null>("");
-  //  TODO fetch contacts using apiData function, handle loading and error states
+
   useEffect(() => {
     setisLoading(true);
     setError(null);
@@ -25,7 +26,8 @@ function App({ receiveData = apiData }) {
       .finally(() => {
         setisLoading(false);
       });
-  }, [currentPage]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, receiveData]);
 
   const handleCardClick = useCallback(
     (id: string) => {
@@ -48,19 +50,27 @@ function App({ receiveData = apiData }) {
 
   return (
     <div className='App'>
-      <div className='selected'>Selected contacts: {selected.length}</div>
-      {isLoading && <div>Loading...</div>}
-      <div className='list'>
+      <div className='App__selected'>Selected contacts: {selected.length}</div>
+      <div className='App__list'>
         {data.sort(sortBySelected).map((personInfo) => (
-          // @ts-ignore
           <PersonInfo
             key={personInfo.id}
             data={personInfo}
             onClick={handleCardClick}
+            selected={selected.includes(personInfo.id)}
           />
         ))}
       </div>
-      <button onClick={() => setCurrentPage(currentPage + 1)}>Load More</button>
+      {isLoading ? (
+        <Loader />
+      ) : (
+        <button
+          onClick={() => setCurrentPage(currentPage + 1)}
+          className='App__button'
+        >
+          Load More
+        </button>
+      )}
       <div>{error}</div>
     </div>
   );

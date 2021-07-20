@@ -1,5 +1,7 @@
+import classNames from "classnames";
 import React, { useCallback } from "react";
 
+import "./PersonInfo.css";
 type Props = {
   data: {
     firstNameLastName: string;
@@ -8,10 +10,11 @@ type Props = {
     id: string;
   };
   onClick: (id: string) => void;
+  selected: boolean;
 };
 
 function PersonInfo(props: Props) {
-  const { data, onClick } = props;
+  const { data, onClick, selected } = props;
   const { firstNameLastName, jobTitle, emailAddress, id } = data;
   const handleClick = useCallback(() => {
     onClick(id);
@@ -19,26 +22,17 @@ function PersonInfo(props: Props) {
 
   return (
     <div
-      style={{
-        display: "flex",
-        height: "100px",
-        justifyContent: "center",
-        flexDirection: "column",
-        padding: "32px",
-        boxShadow: "0px 1px 2px 0px rgba(0, 0, 0, 0.15)",
-        margin: "10px 0",
-        background: "#fff",
-        cursor: "pointer",
-      }}
-      className='person-info'
+      className={classNames("person-info", {
+        "person-info--selected": selected,
+      })}
       data-testid='person-info'
       onClick={handleClick}
     >
-      <div className='firstNameLastName'>{firstNameLastName}</div>
-      <div className='jobTitle'>{jobTitle}</div>
-      <div className='emailAddress'>{emailAddress}</div>
+      <div className='person-info__firstNameLastName'>{firstNameLastName}</div>
+      <div className='person-info__jobTitle'>{jobTitle}</div>
+      <div className='person-info__emailAddress'>{emailAddress}</div>
     </div>
   );
 }
 
-export default PersonInfo;
+export default React.memo(PersonInfo);
