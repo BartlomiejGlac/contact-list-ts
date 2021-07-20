@@ -16,8 +16,13 @@ afterEach(() => {
   jest.resetAllMocks();
 });
 
+const getDefaultMockResolvingFirstDataBatch = () =>
+  jest.fn().mockResolvedValue(firstBatchOfData);
+
+const findLoadingElement = () => screen.queryByText("Loading...");
+
 test("should render elements on the list when fetches successfully", async () => {
-  const mockReceiveDataFunc = jest.fn().mockResolvedValue(firstBatchOfData);
+  const mockReceiveDataFunc = getDefaultMockResolvingFirstDataBatch();
 
   render(<App receiveData={mockReceiveDataFunc} />);
   await waitForElement(() =>
@@ -29,19 +34,25 @@ test("should render elements on the list when fetches successfully", async () =>
   );
 });
 
-test("should render loading indicator when before fetching data", async () => {
-  const mockReceiveDataFunc = jest.fn().mockResolvedValue(firstBatchOfData);
+test("should render loading indicator before fetching data", async () => {
+  const mockReceiveDataFunc = getDefaultMockResolvingFirstDataBatch();
 
   render(<App receiveData={mockReceiveDataFunc} />);
 
-  const findLoadingElement = () => screen.getByText("Loading...");
   expect(findLoadingElement()).toBeInTheDocument();
+
+  //making sure nothing renders after test
+  await waitForElementToBeRemoved(() => findLoadingElement());
+});
+
+test("should remove loading indicator after fetching data", async () => {
+  const mockReceiveDataFunc = getDefaultMockResolvingFirstDataBatch();
+
+  render(<App receiveData={mockReceiveDataFunc} />);
 
   await waitForElementToBeRemoved(() => findLoadingElement());
 
-  firstBatchOfData.forEach((person) =>
-    expect(screen.getByText(person.emailAddress)).toBeInTheDocument()
-  );
+  expect(findLoadingElement()).toBeNull();
 });
 
 test("should render more elements when clicked load more button", async () => {
@@ -50,15 +61,19 @@ test("should render more elements when clicked load more button", async () => {
     .mockResolvedValueOnce(firstBatchOfData)
     .mockResolvedValueOnce(secondBatchOfData);
   render(<App receiveData={mockReceiveDataFunc} />);
+
   await waitForElement(() =>
     screen.getByText(firstBatchOfData[0].emailAddress)
   );
   const numberOfItemsBeforeButtonClick = screen.getAllByTestId("person-info");
+
   fireEvent.click(screen.getByText("Load More"));
+
   await waitForElement(() =>
     screen.getByText(secondBatchOfData[0].emailAddress)
   );
   const numberOfItemsAfterButtonClick = screen.getAllByTestId("person-info");
+
   expect(numberOfItemsBeforeButtonClick).toHaveLength(firstBatchOfData.length);
   expect(numberOfItemsAfterButtonClick).toHaveLength(
     firstBatchOfData.length + secondBatchOfData.length
@@ -69,26 +84,30 @@ test("should display error message when fetching data failure", async () => {
   const mockReceiveDataFunc = jest
     .fn()
     .mockRejectedValue(new Error("Something went wrong"));
+
   render(<App receiveData={mockReceiveDataFunc} />);
   const element = await waitForElement(() =>
     screen.getByText("Sorry, sommething went wrong, please try again")
   );
+
   expect(element).toBeInTheDocument();
 });
 
 test("should not display error message when fetching data succeed", async () => {
-  const mockReceiveDataFunc = jest.fn().mockResolvedValueOnce(firstBatchOfData);
+  const mockReceiveDataFunc = getDefaultMockResolvingFirstDataBatch();
+
   render(<App receiveData={mockReceiveDataFunc} />);
   await waitForElement(() =>
     screen.getByText(firstBatchOfData[0].emailAddress)
   );
+
   expect(
     screen.queryByText("Sorry, sommething went wrong, please try again")
   ).toBeNull();
 });
 
 test("should show selected elements first", async () => {
-  const mockReceiveDataFunc = jest.fn().mockResolvedValueOnce(firstBatchOfData);
+  const mockReceiveDataFunc = getDefaultMockResolvingFirstDataBatch();
 
   render(<App receiveData={mockReceiveDataFunc} />);
   await waitForElement(() =>
@@ -108,7 +127,7 @@ test("should show selected elements first", async () => {
 });
 
 test("should render elements in previous order when element deselected", async () => {
-  const mockReceiveDataFunc = jest.fn().mockResolvedValueOnce(firstBatchOfData);
+  const mockReceiveDataFunc = getDefaultMockResolvingFirstDataBatch();
 
   render(<App receiveData={mockReceiveDataFunc} />);
   await waitForElement(() =>
