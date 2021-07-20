@@ -90,7 +90,7 @@ test("should not display error message when fetching data succeed", async () => 
 test("should show selected elements first", async () => {
   const mockReceiveDataFunc = jest.fn().mockResolvedValueOnce(firstBatchOfData);
 
-  const { container } = render(<App receiveData={mockReceiveDataFunc} />);
+  render(<App receiveData={mockReceiveDataFunc} />);
   await waitForElement(() =>
     screen.getByText(firstBatchOfData[0].emailAddress)
   );
@@ -104,5 +104,23 @@ test("should show selected elements first", async () => {
   );
   expect(listElementsAffterSelect[0]).toHaveTextContent(
     firstBatchOfData[1].emailAddress
+  );
+});
+
+test("should render elements in previous order when element deselected", async () => {
+  const mockReceiveDataFunc = jest.fn().mockResolvedValueOnce(firstBatchOfData);
+
+  render(<App receiveData={mockReceiveDataFunc} />);
+  await waitForElement(() =>
+    screen.getByText(firstBatchOfData[0].emailAddress)
+  );
+
+  fireEvent.click(screen.getByText(firstBatchOfData[1].emailAddress));
+  fireEvent.click(screen.getByText(firstBatchOfData[1].emailAddress));
+
+  const listElementsAffterDeselect = screen.getAllByTestId("person-info");
+
+  expect(listElementsAffterDeselect[0]).toHaveTextContent(
+    firstBatchOfData[0].emailAddress
   );
 });

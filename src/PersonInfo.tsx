@@ -1,15 +1,22 @@
-import React from "react";
+import React, { useCallback } from "react";
 
 type Props = {
   data: {
     firstNameLastName: string;
     jobTitle: string;
     emailAddress: string;
+    id: string;
   };
+  onClick: (id: string) => void;
 };
 
 function PersonInfo(props: Props) {
-  const { data } = props;
+  const { data, onClick } = props;
+  const { firstNameLastName, jobTitle, emailAddress, id } = data;
+  const handleClick = useCallback(() => {
+    onClick(id);
+  }, [id, onClick]);
+
   return (
     <div
       style={{
@@ -25,10 +32,11 @@ function PersonInfo(props: Props) {
       }}
       className='person-info'
       data-testid='person-info'
+      onClick={handleClick}
     >
-      <div className='firstNameLastName'>{data.firstNameLastName}</div>
-      <div className='jobTitle'>{data.jobTitle}</div>
-      <div className='emailAddress'>{data.emailAddress}</div>
+      <div className='firstNameLastName'>{firstNameLastName}</div>
+      <div className='jobTitle'>{jobTitle}</div>
+      <div className='emailAddress'>{emailAddress}</div>
     </div>
   );
 }
