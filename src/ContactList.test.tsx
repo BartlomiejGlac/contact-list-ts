@@ -18,10 +18,12 @@ afterEach(() => {
 
 test("should render elements on the list when fetches successfully", async () => {
   const mockReceiveDataFunc = jest.fn().mockResolvedValue(firstBatchOfData);
+
   render(<App receiveData={mockReceiveDataFunc} />);
   await waitForElement(() =>
     screen.getByText(firstBatchOfData[0].emailAddress)
   );
+
   firstBatchOfData.forEach((person) =>
     expect(screen.getByText(person.emailAddress)).toBeInTheDocument()
   );
@@ -29,7 +31,9 @@ test("should render elements on the list when fetches successfully", async () =>
 
 test("should render loading indicator when before fetching data", async () => {
   const mockReceiveDataFunc = jest.fn().mockResolvedValue(firstBatchOfData);
+
   render(<App receiveData={mockReceiveDataFunc} />);
+
   const findLoadingElement = () => screen.getByText("Loading...");
   expect(findLoadingElement()).toBeInTheDocument();
 
@@ -81,4 +85,24 @@ test("should not display error message when fetching data succeed", async () => 
   expect(
     screen.queryByText("Sorry, sommething went wrong, please try again")
   ).toBeNull();
+});
+
+test("should show selected elements first", async () => {
+  const mockReceiveDataFunc = jest.fn().mockResolvedValueOnce(firstBatchOfData);
+
+  const { container } = render(<App receiveData={mockReceiveDataFunc} />);
+  await waitForElement(() =>
+    screen.getByText(firstBatchOfData[0].emailAddress)
+  );
+  const listElementsBeforeSelect = screen.getAllByTestId("person-info");
+
+  fireEvent.click(screen.getByText(firstBatchOfData[1].emailAddress));
+  const listElementsAffterSelect = screen.getAllByTestId("person-info");
+
+  expect(listElementsBeforeSelect[0]).toHaveTextContent(
+    firstBatchOfData[0].emailAddress
+  );
+  expect(listElementsAffterSelect[0]).toHaveTextContent(
+    firstBatchOfData[1].emailAddress
+  );
 });
