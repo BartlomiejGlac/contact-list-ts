@@ -29,3 +29,12 @@
   margin: 4px 2px;
   cursor: pointer;
 }
+
+.App__button:hover {
+  background-color: pink;
+  opacity: 0.9;
+}
+
+.App__error-message {
+  color: #e74c3c;
+}

@@ -3,6 +3,7 @@ import apiData from "./api";
 import Loader from "./Loader";
 import PersonInfo from "./PersonInfo";
 import "./App.css";
+
 interface UserProfile {
   id: string;
   jobTitle: string;
@@ -14,20 +15,25 @@ function App({ receiveData = apiData }) {
   const [data, setData] = React.useState<UserProfile[]>([]);
   const [selected, setSelected] = React.useState<string[]>([]);
   const [isLoading, setisLoading] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
   const [error, setError] = useState<string | null>("");
 
   useEffect(() => {
+    loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const loadData = () => {
     setisLoading(true);
     setError(null);
     receiveData()
-      .then((batch) => setData(data.concat(batch)))
-      .catch(() => setError("Sorry, sommething went wrong, please try again"))
+      .then((dataBatch) => setData(data.concat(dataBatch)))
+      .catch(() => {
+        setError("Sorry, sommething went wrong, please try again");
+      })
       .finally(() => {
         setisLoading(false);
       });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, receiveData]);
+  };
 
   const handleCardClick = useCallback(
     (id: string) => {
@@ -64,14 +70,11 @@ function App({ receiveData = apiData }) {
       {isLoading ? (
         <Loader />
       ) : (
-        <button
-          onClick={() => setCurrentPage(currentPage + 1)}
-          className='App__button'
-        >
+        <button onClick={() => loadData()} className='App__button'>
           Load More
         </button>
       )}
-      <div>{error}</div>
+      <div className='App__error-message'>{error}</div>
     </div>
   );
 }
