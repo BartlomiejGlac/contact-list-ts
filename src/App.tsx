@@ -14,7 +14,7 @@ interface UserProfile {
 function App({ receiveData = apiData }) {
   const [data, setData] = React.useState<UserProfile[]>([]);
   const [selected, setSelected] = React.useState<string[]>([]);
-  const [isLoading, setisLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>("");
 
   useEffect(() => {
@@ -23,15 +23,15 @@ function App({ receiveData = apiData }) {
   }, []);
 
   const loadData = () => {
-    setisLoading(true);
+    setIsLoading(true);
     setError(null);
     receiveData()
       .then((dataBatch) => setData(data.concat(dataBatch)))
       .catch(() => {
-        setError("Sorry, sommething went wrong, please try again");
+        setError("Sorry, something went wrong, please try again");
       })
       .finally(() => {
-        setisLoading(false);
+        setIsLoading(false);
       });
   };
 
@@ -67,6 +67,7 @@ function App({ receiveData = apiData }) {
           />
         ))}
       </div>
+
       {isLoading ? (
         <Loader />
       ) : (
