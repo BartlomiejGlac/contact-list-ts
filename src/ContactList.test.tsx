@@ -87,7 +87,7 @@ test("should display error message when fetching data failure", async () => {
 
   render(<App receiveData={mockReceiveDataFunc} />);
   const element = await waitForElement(() =>
-    screen.getByText("Sorry, sommething went wrong, please try again")
+    screen.getByText("Sorry, something went wrong, please try again")
   );
 
   expect(element).toBeInTheDocument();

@@ -1,8 +1,9 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback } from "react";
 import apiData from "./api";
 import Loader from "./Loader";
 import PersonInfo from "./PersonInfo";
 import "./App.css";
+import useDataFetcher from "./useDataFetcher";
 
 interface UserProfile {
   id: string;
@@ -12,28 +13,9 @@ interface UserProfile {
 }
 
 function App({ receiveData = apiData }) {
-  const [data, setData] = React.useState<UserProfile[]>([]);
   const [selected, setSelected] = React.useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>("");
-
-  useEffect(() => {
-    loadData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const loadData = () => {
-    setIsLoading(true);
-    setError(null);
-    receiveData()
-      .then((dataBatch) => setData(data.concat(dataBatch)))
-      .catch(() => {
-        setError("Sorry, something went wrong, please try again");
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  };
+  const [state, loadMore] = useDataFetcher<UserProfile>(receiveData, []);
+  const { data, isLoading, isError } = state;
 
   const handleCardClick = useCallback(
     (id: string) => {
@@ -54,6 +36,7 @@ function App({ receiveData = apiData }) {
     return Number(firstContact.id) - Number(secondContact.id);
   };
 
+  const errorMessage = "Sorry, something went wrong, please try again";
   return (
     <div className='App'>
       <div className='App__selected'>Selected contacts: {selected.length}</div>
@@ -71,11 +54,11 @@ function App({ receiveData = apiData }) {
       {isLoading ? (
         <Loader />
       ) : (
-        <button onClick={() => loadData()} className='App__button'>
+        <button onClick={() => loadMore()} className='App__button'>
           Load More
         </button>
       )}
-      <div className='App__error-message'>{error}</div>
+      {isError && <div className='App__error-message'>{errorMessage}</div>}
     </div>
   );
 }
